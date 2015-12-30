@@ -24,7 +24,9 @@
   },
   "dependencies": {
     "body-parser": "^1.14.2",
-    "express": "~3.4.4"
+    "express": "~3.4.4",
+    "mongodb": "^2.1.2",
+    "mongoose": "^4.3.4"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
