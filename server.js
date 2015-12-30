@@ -25,7 +25,6 @@ var GatherUp = function() {
         };
     };
 
-
     /**
      *  terminator === the termination handler
      *  Terminate server on receipt of the specified signal.
@@ -39,7 +38,6 @@ var GatherUp = function() {
         }
         console.log('%s: Node server stopped.', Date(Date.now()) );
     };
-
 
     /**
      *  Setup termination handlers (for exit and a list of signals).
