@@ -1,21 +1,13 @@
-#!/bin/env node
-//  OpenShift sample Node application
+#!/bin/env 
+
 var express = require('express');
-var fs      = require('fs');
+var bodyParser = require('body-parser');
+var bodyParser = require('body-parser');
 
-
-/**
- *  Define the sample application.
- */
-var SampleApp = function() {
+var GatherUp = function() {
 
     //  Scope.
     var self = this;
-
-
-    /*  ================================================================  */
-    /*  Helper functions.                                                 */
-    /*  ================================================================  */
 
     /**
      *  Set up server IP address and port # using env variables/defaults.
@@ -32,26 +24,6 @@ var SampleApp = function() {
             self.ipaddress = "127.0.0.1";
         };
     };
-
-
-    /**
-     *  Populate the cache.
-     */
-    self.populateCache = function() {
-        if (typeof self.zcache === "undefined") {
-            self.zcache = { 'index.html': '' };
-        }
-
-        //  Local cache for static content.
-        self.zcache['index.html'] = fs.readFileSync('./index.html');
-    };
-
-
-    /**
-     *  Retrieve entry (content) from cache.
-     *  @param {string} key  Key identifying content to retrieve from cache.
-     */
-    self.cache_get = function(key) { return self.zcache[key]; };
 
 
     /**
@@ -95,17 +67,18 @@ var SampleApp = function() {
     self.createRoutes = function() {
         self.routes = { };
 
-        self.routes['/asciimo'] = function(req, res) {
-            var link = "http://i.imgur.com/kmbjB.png";
-            res.send("<html><body><img src='" + link + "'></body></html>");
-        };
-
         self.routes['/'] = function(req, res) {
-            res.setHeader('Content-Type', 'text/html');
-            res.send(self.cache_get('index.html') );
+            res.setHeader('Content-Type', 'application/json');
+            res.send({'title':'GatherUp'});
         };
     };
-
+    
+    self.useRoutes = function(app) {
+        app.post('/testpost', function(req, res) {
+            console.log(req.body); 
+            res.send(200);
+        });
+    };
 
     /**
      *  Initialize the server (express) and create the routes and register
@@ -113,7 +86,11 @@ var SampleApp = function() {
      */
     self.initializeServer = function() {
         self.createRoutes();
-        self.app = express.createServer();
+        self.app = express();
+        self.app.use(bodyParser.json());
+        self.app.use(bodyParser.urlencoded());
+        
+        self.useRoutes(self.app);
 
         //  Add handlers for the app (from the routes).
         for (var r in self.routes) {
@@ -127,7 +104,6 @@ var SampleApp = function() {
      */
     self.initialize = function() {
         self.setupVariables();
-        self.populateCache();
         self.setupTerminationHandlers();
 
         // Create the express server and routes.
@@ -146,14 +122,9 @@ var SampleApp = function() {
         });
     };
 
-};   /*  Sample Application.  */
+}; 
 
-
-
-/**
- *  main():  Main code.
- */
-var zapp = new SampleApp();
-zapp.initialize();
-zapp.start();
+var gu = new GatherUp();
+gu.initialize();
+gu.start();
 
