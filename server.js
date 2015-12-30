@@ -48,14 +48,21 @@ var GatherUp = function () {
     self.useRoutes = function (app) {
         //TODO REPLACE WITH SINGLE FILES
         app.get('/', function (req, res) {
-            res.json({
-                'title': 'GatherUp'
+            self.User.find(function (err, users) {
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(200).json(users.length);
+                }
             });
         });
-        
+
         app.post('/testpost', function (req, res) {
-            console.log(req.body);
-            res.send(200);
+            var data = req.body;
+            var user = new self.User(data);
+            user.save();
+            console.log(user);
+            res.status(201).json(user);
         });
     };
 
@@ -69,6 +76,7 @@ var GatherUp = function () {
 
     self.initDB = function () {
         self.db = mongoose.connect(self.dbConnection);
+        self.User = require('./models/userModel');
         console.log('Connected to mongo at address: ' + self.dbConnection);
     }
 
