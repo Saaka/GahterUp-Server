@@ -100,7 +100,7 @@ var GatherUp = function () {
         self.db = mongoose.connect(self.dbConnection);
         self.User = require('./models/userModel');
         console.log('Connected to mongo at address: ' + self.dbConnection);
-    }
+    };
 
     self.initialize = function () {
         self.setupVariables();
