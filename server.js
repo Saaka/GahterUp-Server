@@ -14,6 +14,7 @@ var GatherUp = function () {
         self.dbConnection = process.env.OPENSHIFT_MONGODB_DB_URL || 'localhost:27017';
 
         if (typeof self.ipaddress === "undefined") {
+            self.isDev = true;
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
             //  allows us to run/test the app locally.
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
@@ -23,7 +24,7 @@ var GatherUp = function () {
 
     self.terminator = function (sig) {
         if (typeof sig === "string") {
-            console.log('%s: Received %s - terminating sample app ...',
+            console.log('%s: Received %s - terminating GatherUp Server ...',
                 Date(Date.now()), sig);
             process.exit(1);
         }
@@ -64,12 +65,33 @@ var GatherUp = function () {
             console.log(user);
             res.status(201).json(user);
         });
+        
+        app.get('/clearUsers', function(req, res) {
+           self.User.remove({}, function(err){}); 
+            res.status(200);
+        });
+    };
+
+    //Use later
+    self.accessControl = function (req, res, next) {
+        if (self.isDev) {
+            res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8000');
+        } else {
+            res.setHeader('Access-Control-Allow-Origin', 'http://saaka.github.io');
+        }
+        
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+        next();
     };
 
     self.initializeServer = function () {
         self.app = express();
         self.app.use(bodyParser.json());
         self.app.use(bodyParser.urlencoded());
+        
+        self.app.use(self.accessControl);
 
         self.useRoutes(self.app);
     };
@@ -93,6 +115,7 @@ var GatherUp = function () {
         self.app.listen(self.port, self.ipaddress, function () {
             console.log('%s: Node server started on %s:%d ...',
                 Date(Date.now()), self.ipaddress, self.port);
+            console.log('isDev: %s', self.isDev);
         });
     };
 
