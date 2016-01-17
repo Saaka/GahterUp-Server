@@ -61,13 +61,19 @@ var GatherUp = function () {
         app.post('/testpost', function (req, res) {
             var data = req.body;
             var user = new self.User(data);
-            user.save();
-            console.log(user);
-            res.status(201).json(user);
+            user.save(function (err) {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send(err);
+                } else {
+                    console.log(user);
+                    res.status(201).json(user);
+                }
+            });
         });
-        
-        app.get('/clearUsers', function(req, res) {
-           self.User.remove({}, function(err){}); 
+
+        app.get('/clearUsers', function (req, res) {
+            self.User.remove({}, function (err) {});
             res.status(200);
         });
     };
@@ -79,7 +85,7 @@ var GatherUp = function () {
         } else {
             res.setHeader('Access-Control-Allow-Origin', 'http://saaka.github.io');
         }
-        
+
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
@@ -90,7 +96,7 @@ var GatherUp = function () {
         self.app = express();
         self.app.use(bodyParser.json());
         self.app.use(bodyParser.urlencoded());
-        
+
         self.app.use(self.accessControl);
 
         self.useRoutes(self.app);
