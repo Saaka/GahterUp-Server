@@ -62,13 +62,25 @@ var GatherUp = function () {
         app.post('/testpost', function (req, res) {
             var data = req.body;
             var user = new self.User(data);
+
             user.save(function (err) {
                 if (err) {
                     console.log(err);
                     res.status(500).send(err);
                 } else {
+
+                    var payload = {
+                        iss: req.hostname,
+                        sub: user._id
+                    };
+
+                    var token = jwt.encode(payload, "tempsecret");
+                    console.log(token);
                     console.log(user);
-                    res.status(201).send(user.toJSON());
+                    res.status(201).send({
+                        user: user.toJSON(),
+                        token: token
+                    });
                 }
             });
         });
