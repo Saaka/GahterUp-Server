@@ -3,6 +3,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var jwt = require('./services/jwt.js');
 
 var GatherUp = function () {
     var self = this;
@@ -122,6 +123,7 @@ var GatherUp = function () {
             console.log('%s: Node server started on %s:%d ...',
                 Date(Date.now()), self.ipaddress, self.port);
             console.log('isDev: %s', self.isDev);
+            console.log(jwt.encode('hi', 'secret'));
         });
     };
 

@@ -25,6 +25,7 @@
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.14.2",
+    "crypto": "0.0.3",
     "express": "~3.4.4",
     "mongodb": "^2.1.2",
     "mongoose": "^4.3.4"
