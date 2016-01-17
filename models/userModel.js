@@ -10,31 +10,38 @@ var userModel = new Schema({
         type: String
     },
     password: {
-        type: String  
+        type: String
     },
     firstName: {
         type: String
     },
     lastName: {
-        type: String  
+        type: String
     }
 });
 
-userModel.pre('save', function(next) {
+userModel.pre('save', function (next) {
     var user = this;
-    
-    if(!user.isModified('password')) return next();
-    
-    bcrypt.genSalt(10, function(err, salt) {
-       if(err) return next(err);
-        
-        bcrypt.hash(user.password, salt, null, function(err, hash) {
-           if(err) return next(err);
-            
+
+    if (!user.isModified('password')) return next();
+
+    bcrypt.genSalt(10, function (err, salt) {
+        if (err) return next(err);
+
+        bcrypt.hash(user.password, salt, null, function (err, hash) {
+            if (err) return next(err);
+
             user.password = hash;
             next();
         });
     });
 });
+
+userModel.methods.toJSON = function () {
+    var user = this.toObject();
+    delete user.password;
+
+    return user;
+};
 
 module.exports = mongoose.model('User', userModel);

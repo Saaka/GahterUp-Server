@@ -67,7 +67,7 @@ var GatherUp = function () {
                     res.status(500).send(err);
                 } else {
                     console.log(user);
-                    res.status(201).json(user);
+                    res.status(201).send(user.toJSON());
                 }
             });
         });
